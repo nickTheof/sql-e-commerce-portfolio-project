@@ -113,3 +113,107 @@ WHERE o.status = 'Completed'
 GROUP BY p.product_id, p.name;
 
 
+-- Query to calculate average ratings per category
+-- including category ID, category name, and rounded average rating, ordered by average rating in descending order
+SELECT 
+SELECT 
+    c.category_id,
+    c.category_name,
+    ROUND(AVG(r.rating),2) as avg_rating
+FROM reviews r
+JOIN products p ON p.product_id = r.product_id
+JOIN categories c ON c.category_id = p.category_id
+GROUP BY c.category_id, category_name
+ORDER BY avg_rating DESC;
+
+
+-- Query to find the top 3 customers with the highest completed total order value
+WITH CustomerOrderValue AS (
+    SELECT 
+        u.user_id,
+        u.username,
+        SUM(oi.quantity * oi.price_at_purchase) AS total_order_value
+    FROM 
+        users u
+    JOIN 
+        orders o ON u.user_id = o.user_id
+    JOIN 
+        order_items oi ON o.order_id = oi.order_id
+    WHERE
+        o.status = 'Completed'
+    GROUP BY 
+        u.user_id, u.username
+)
+SELECT 
+    username,
+    ROUND(total_order_value, 2) AS total_order_value
+FROM 
+    CustomerOrderValue
+ORDER BY 
+    total_order_value DESC
+LIMIT 3;
+
+
+-- Query to calculate the cumulative sales(completed) revenue over time
+SELECT
+    DISTINCT(order_date),
+    SUM(price_at_purchase * quantity) OVER (ORDER BY order_date) AS cumulative_revenue
+FROM
+    orders o
+JOIN 
+    order_items oi ON o.order_id = oi.order_id
+WHERE
+    o.status = 'Completed'
+ORDER BY 
+    order_date;
+
+
+-- Query to calculate the sales growth rate month over month
+WITH MonthlySales AS (
+    SELECT
+        EXTRACT(Year FROM o.order_date) AS year,
+        EXTRACT(Month FROM o.order_date) AS month,
+        SUM(oi.quantity * oi.price_at_purchase) AS monthly_sales
+    FROM
+        orders o
+    JOIN 
+        order_items oi ON o.order_id = oi.order_id
+    WHERE 
+        o.status = 'Completed'
+    GROUP BY 
+        year, month
+)
+SELECT
+    year,
+    month,
+    monthly_sales,
+    LAG(monthly_sales) OVER (ORDER BY year, month) AS previous_month_sales,
+    ROUND(((monthly_sales - LAG(monthly_sales) OVER (ORDER BY year, month)) / NULLIF(LAG(monthly_sales) OVER (ORDER BY year, month), 0)) * 100, 2) AS growth_rate
+FROM
+    MonthlySales;
+
+
+-- Query to find the number of orders and total revenue for each product
+SELECT 
+    p.product_id,
+    p.name AS product_name,
+    COUNT(oi.order_id) AS number_of_orders,
+    ROUND(SUM(oi.quantity * oi.price_at_purchase), 2) AS total_revenue
+FROM 
+    products p
+JOIN 
+    order_items oi ON p.product_id = oi.product_id
+JOIN orders o ON o.order_id = oi.order_id
+WHERE 
+    o.status = 'Completed'
+GROUP BY 
+    p.product_id, p.name
+ORDER BY 
+    total_revenue DESC;
+
+
+
+
+
+
+

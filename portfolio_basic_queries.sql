@@ -147,3 +147,79 @@ SELECT
 FROM products p
 JOIN categories c on p.category_id=c.category_id
 WHERE p.price > (SELECT AVG(price) FROM products);
+
+
+-- Query to retrieve the top 5 most expensive products
+-- including product name, price, and category name, ordered by price in descending order
+SELECT 
+    p.name AS product_name,
+    p.price,
+    c.category_name
+FROM 
+    products p
+JOIN 
+    categories c ON p.category_id = c.category_id
+ORDER BY 
+    p.price DESC
+LIMIT 5;
+
+
+-- Query to retrieve products with low stock quantities
+-- including product name and stock quantity, ordered by stock quantity in ascending order
+SELECT 
+    name AS product_name,
+    stock_quantity
+FROM 
+    products
+WHERE 
+    stock_quantity < 25
+ORDER BY 
+    stock_quantity ASC;
+
+
+-- Query to calculate the monthly sales revenue for the current year
+SELECT
+    EXTRACT(Month FROM o.order_date) AS month,
+    ROUND(SUM(oi.quantity * oi.price_at_purchase), 2) AS monthly_revenue
+FROM
+    orders o
+JOIN 
+    order_items oi ON o.order_id = oi.order_id
+WHERE
+    EXTRACT(Year FROM o.order_date) = EXTRACT(Year FROM NOW())
+GROUP BY 
+    month
+ORDER BY 
+    month;
+
+
+-- Query to find products that have not received any reviews
+SELECT 
+    p.product_id,
+    p.name AS product_name
+FROM 
+    products p
+LEFT JOIN 
+    reviews r ON p.product_id = r.product_id
+WHERE 
+    r.review_id IS NULL;
+
+
+-- Query to calculate the average completed order value per customer
+SELECT 
+    u.username,
+    ROUND(AVG(oi.price_at_purchase * oi.quantity), 2) AS average_order_value
+FROM 
+    users u
+JOIN 
+    orders o ON u.user_id = o.user_id
+JOIN 
+    order_items oi ON o.order_id = oi.order_id
+WHERE 
+    o.status = 'Completed'
+GROUP BY 
+    u.username
+HAVING
+     ROUND(AVG(oi.price_at_purchase * oi.quantity), 2) > 300
+ORDER BY 
+    average_order_value DESC;
