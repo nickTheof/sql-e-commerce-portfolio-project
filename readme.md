@@ -88,3 +88,4 @@ The `inventory_transactions` table stores information about inventory transactio
 - `inventory_transactions.transaction_type` must be either 'IN' or 'OUT'.
 
 This database schema is designed to handle the fundamental aspects of an e-commerce platform, providing a structure for managing users, products, categories, orders, reviews, and inventory transactions.
+
