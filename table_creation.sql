@@ -63,5 +63,30 @@ CREATE TABLE Inventory_Transactions (
 );
 
 
+-- Indexes for Products Table
+CREATE INDEX idx_products_product_id ON products(product_id);
+CREATE INDEX idx_products_category_id ON products(category_id);
+CREATE INDEX idx_products_price ON products(price);
+
+-- Indexes for Categories Table
+CREATE INDEX idx_categories_category_id ON categories(category_id);
+CREATE INDEX idx_categories_category_name ON categories(category_name);
+
+-- Indexes for Orders Table
+CREATE INDEX idx_orders_order_id ON orders(order_id);
+CREATE INDEX idx_orders_user_id ON orders(user_id);
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_orders_order_date ON orders(order_date);
+
+-- Indexes for Order Items Table
+CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+CREATE INDEX idx_order_items_product_id ON order_items(product_id);
+
+-- Indexes for Reviews Table
+CREATE INDEX idx_reviews_product_id ON reviews(product_id);
+
+-- Indexes for Users Table
+CREATE INDEX idx_users_user_id ON users(user_id);
+CREATE INDEX idx_users_username ON users(username);
 
 
