@@ -89,3 +89,4 @@ The `inventory_transactions` table stores information about inventory transactio
 
 This database schema is designed to handle the fundamental aspects of an e-commerce platform, providing a structure for managing users, products, categories, orders, reviews, and inventory transactions.
 
+![Alt text](https://github.com/nickTheof/sql-e-commerce-portfolio-project/blob/main/pictures/entity%20diagram.png)
