@@ -68,6 +68,16 @@ FROM
     orders;
 
 
+-- Query to calculate the percentage of completed orders
+SELECT 
+    ROUND(
+        (COUNT(*) FILTER (WHERE status = 'Completed')::decimal / COUNT(*) * 100), 
+        2
+    ) AS completed_order_percentage
+FROM 
+    orders;
+
+
 -- Query to count the number of orders grouped by year and month, ordered by year and month
 SELECT
     EXTRACT(Year FROM order_date) as year, 
@@ -85,3 +95,55 @@ FROM
     orders 
 WHERE     order_date >= DATE_TRUNC('year', NOW()) - INTERVAL '1 year'
     AND order_date < DATE_TRUNC('year', NOW());
+
+
+-- Query to retrieve detailed order information including order ID, order date, username, product name, quantity, and price at purchase
+-- for orders placed between January 1, 2024, and the current date
+SELECT
+    o.order_id,
+    o.order_date,
+    u.username,
+    p.name,
+    oi.quantity,
+    oi.price_at_purchase
+FROM
+    orders o
+JOIN
+    users u ON u.user_id=o.user_id
+JOIN
+    order_items oi ON oi.order_id=o.order_id
+JOIN
+    products p ON p.product_id=oi.product_id
+WHERE
+    o.order_date BETWEEN '01-01-2024' AND NOW();
+
+
+-- Query to calculate the total quantity and total revenue for each product category
+-- by summing the quantities and revenue from order items, grouped by category ID and category name
+SELECT
+    p.category_id,
+    c.category_name,
+    SUM(oi.quantity) as total_quantity,
+    SUM(oi.price_at_purchase*oi.quantity) as total_revenue
+FROM
+    order_items oi
+JOIN
+    products p ON p.product_id=oi.product_id
+JOIN
+    categories c ON c.category_id=p.category_id
+GROUP BY p.category_id, c.category_name
+ORDER BY p.category_id, c.category_name;
+
+
+-- Query to retrieve product details including product ID, category name, product name, price, and average rating
+-- for products priced above the average price of all products
+SELECT
+    P.product_id,
+    c.category_name,
+    p.name,
+    p.price,
+    (SELECT AVG(rating) FROM reviews r WHERE r.product_id=p.product_id) as avg_rating
+
+FROM products p
+JOIN categories c on p.category_id=c.category_id
+WHERE p.price > (SELECT AVG(price) FROM products);
