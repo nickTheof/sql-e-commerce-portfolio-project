@@ -50,4 +50,5 @@ END;
 $$;
 
 -- Implementation of Add Product procedure
-CALL AddProduct('Product A', 'Description for Product A', 29.99, 1, 100)
+CALL AddProduct('Product D', 'Description for Product D', 29.99, 1, 100)
+
