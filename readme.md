@@ -93,4 +93,4 @@ This database schema is designed to handle the fundamental aspects of an e-comme
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](license.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/nickTheof/sql-e-commerce-portfolio-project/blob/main/licence.txt) file for details.
